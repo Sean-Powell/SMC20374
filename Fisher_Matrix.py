@@ -37,6 +37,19 @@ def print_matrix(matrix):
     print("-" * 10)
 
 
+def science_convert(labels):
+    new_labels = []
+    for label in labels:
+        label = label.replace("omega", "\\Omega_")
+        label = label.replace("2", "^2")
+        label = label.replace("log", "log(")
+        label = label.replace("A", "A)")
+        label = label.replace("ns", "n_s")
+        label = label.replace("tau", "\\tau")
+        new_labels.append("$" + label + "$")
+    return new_labels
+
+
 def plot(params):
     center = params[0]
     w_1 = params[1] * 1.52
@@ -45,7 +58,8 @@ def plot(params):
     h_2 = params[2] * 2.48
 
     inclination = params[3]
-    labels = params[4]
+    original_labels = params[4]
+    labels = science_convert(params[4])
     fig, ax = plt.subplots()
     plt.xlabel(labels[0])
     plt.ylabel(labels[1])
@@ -55,24 +69,27 @@ def plot(params):
 
     ell_1 = Ellipse(xy=center, width=w_1, height=h_1, angle=inclination, edgecolor='b', ls='-', lw=1, facecolor='none')
     ell_2 = Ellipse(xy=center, width=w_2, height=h_2, angle=inclination, edgecolor='b', ls='--', lw=1, facecolor='none')
-    plt.scatter(center[0], center[1], 2, c='r')
+    plt.scatter(center[0], center[1], 4, c='r')
     ax.add_artist(ell_1)
     ax.add_artist(ell_2)
-    # plt.ylim(center[1] - w_2 / 2, center[1] + w_2 / 2)
-    # plt.xlim(center[0] - h_1 / 2, center[0] + h_2 / 2)
-    ax.margins(-0.03, -0.43)
 
-    ax.legend((ell_1, ell_2), (r'1 - $\alpha$', r'2 - $\alpha$'))
-    plt.savefig(labels[0] + " vs " + labels[1] + ".png", bbox_inches="tight", pad_inches=0)
+    y_lower = center[1] - h_2
+    y_upper = center[1] + h_2
+    x_lower = center[0] - w_2
+    x_upper = center[0] + w_2
+    plt.ylim(y_lower, y_upper)
+    plt.xlim(x_lower, x_upper)
 
-    random_points_w = rnd.normal(center[0], params[1], 500)
-    random_points_h = rnd.normal(center[1], params[2], 500)
+    ax.legend((ell_1, ell_2), (r'1 - $\alpha$', r'2 - $\alpha$'), loc='upper right')
+
+    random_points_w = rnd.normal(center[0], w_2 / 4, 500)
+    random_points_h = rnd.normal(center[1], h_2 / 4, 500)
     for i in range(500):
         p_w = random_points_w[i]
         p_h = random_points_h[i]
-        plt.scatter(p_w, p_h, 2, c='black')
+        plt.scatter(p_w, p_h, 1, c='black')
+    plt.savefig(original_labels[0] + " vs " + original_labels[1] + ".png", bbox_inches="tight", pad_inches=0)
     plt.show()
-
 
 
 matrix = get_covariance_matrix("base_w_plikHM_TTTEEE_lowl_lowE_BAO_Riess18_Pantheon.covmat")
@@ -91,5 +108,5 @@ logA_ns_obj.print_fisher_matrix()
 tau_w_obj.print_covariance_matrix()
 tau_w_obj.print_fisher_matrix()
 
-plot(bh2_ch2_obj.get_ellipse_params())
+plot(tau_w_obj.get_ellipse_params())
 print("done")
