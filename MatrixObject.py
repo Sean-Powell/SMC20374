@@ -105,7 +105,7 @@ class Matrix:
     def get_labels(self):
         return [self.label_1, self.label_2]
 
-    def get_ellipse_params(self):
+    def ellipse_params(self):
         sigma_x2 = self.covariance_matrix[0][0]
         sigma_y2 = self.covariance_matrix[1][1]
         sigma_xy2 = math.pow(self.covariance_matrix[1][0], 2)
@@ -114,6 +114,21 @@ class Matrix:
         sub_sqrt = math.sqrt((math.pow(sigma_x2 - sigma_y2, 2) / 4) + sigma_xy2)
         a = np.sqrt(sub_a + sub_sqrt)
         b = np.sqrt(sub_a - sub_sqrt)
-        theta = math.degrees(np.arctan((2 * self.covariance_matrix[1][0]) / (sigma_x2 - sigma_y2)) / 2)
+        theta = np.arctan((2 * self.covariance_matrix[1][0]) / (sigma_x2 - sigma_y2)) / 2
 
+        print("Width:", a, "Height:", b, "Inclination:", theta)
+        print("-" * 21)
         return [self.get_center(), a, b, theta, self.get_labels()]
+
+    # def get_ellipse_params(self):
+    #     sigma_x2 = self.covariance_matrix[0][0]
+    #     sigma_y2 = self.covariance_matrix[1][1]
+    #     sigma_xy2 = math.pow(self.covariance_matrix[1][0], 2)
+    #
+    #     sub_a = (sigma_x2 + sigma_y2) / 2
+    #     sub_sqrt = math.sqrt((math.pow(sigma_x2 - sigma_y2, 2) / 4) + sigma_xy2)
+    #     a = np.sqrt(sub_a + sub_sqrt)
+    #     b = np.sqrt(sub_a - sub_sqrt)
+    #     theta = np.arctan((2 * self.covariance_matrix[1][0]) / (sigma_x2 - sigma_y2)) / 2
+    #
+    #     return [self.get_center(), a, b, theta, self.get_labels()]
