@@ -4,7 +4,7 @@ from matplotlib.patches import Ellipse
 from MatrixObject import Matrix
 import math
 
-def get_covariance_matrix(file_path):
+def get_covariance_matrix(file_path): #  rewrote
     # reads the file specified in the file path parameter, then converts it into a 29x28 matrix.
     # with the labels in the first row at the top of the matrix and this matrix is returned from this function
     f = open(file_path)
