@@ -55,31 +55,15 @@ def createGUI(m):
     image_canvas = tk.Canvas(gui, width=img_width, height=img_height)
     button_frame.pack(side='right')
 
+    pady = 40 / len(matrices)  # edits the padding depending on how many matrices they are
     # lambda expression to pass the matrix to the plotting function so the plot can be created and displayed
     # the lambda expression was used so as we are able to pass parameters to the function that is called.
+
     for i in range(len(matrices)):
         label = matrices[i].get_labels()
         b = tk.Button(button_frame, text=label[0] + " vs " + label[1], width=20, height=3,
                       command=lambda i=i: switch_img(matrices[i], image_canvas))
-        b.pack(side='top', pady=10, padx=25)
-    # button_1 = tk.Button(button_frame, text=omega_sym + "bh" + superscript_two_sym + " vs " + omega_sym + "ch" +
-    #                      superscript_two_sym, width=15, height=3,
-    #                      command=lambda: switch_img(matrices[0], image_canvas))
-    #
-    # button_1.pack(side='top', pady=10)  # padding so the buttons are not touching each other directly
-    #
-    # button_2 = tk.Button(button_frame, text=omega_sym + "ch" + superscript_two_sym + " vs W", width=15, height=3,
-    #                      command=lambda: switch_img(matrices[1], image_canvas))
-    # button_2.pack(side='top', pady=10)
-    #
-    # button_3 = tk.Button(button_frame, text=tau_sym + " vs W", width=15, height=3,
-    #                      command=lambda: switch_img(matrices[2], image_canvas))
-    # button_3.pack(side='top', pady=10)
-    #
-    # button_4 = tk.Button(button_frame, text="log(A) vs ns", width=15, height=3,
-    #                      command=lambda: switch_img(matrices[3], image_canvas))
-    # button_4.pack(side='top', pady=10, padx=40)
-    # image_canvas.create_image(2, 2, image=tk_img, anchor=tk.NW)
+        b.pack(side='top', pady=pady, padx=25)
     image_canvas.pack()
 
     gui.mainloop()

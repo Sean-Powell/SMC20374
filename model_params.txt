@@ -2,3 +2,4 @@ omegabh2,omegach2
 omegach2,w
 logA,ns
 tau,w
+omegach2,logA
