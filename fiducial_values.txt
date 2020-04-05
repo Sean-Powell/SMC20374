@@ -1,0 +1,6 @@
+omegabh2,0.022
+omegach2,0.12
+w,-1
+logA,-19.94
+ns,0.96
+tau,0.09

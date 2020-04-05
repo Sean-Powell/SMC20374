@@ -1,83 +1,85 @@
 import tkinter as tk
+import PlottingFunctions
 from PIL import Image
 from PIL import ImageTk
 import ctypes
 
-width = 940
-height = 600
+# dimensions of items in the GUI
+width = 900
+height = 585
 img_height = 600
 img_width = 720
 
-omega = chr(937)
-tau = chr(0x03C4)
-superscript_two = chr(0x00B2)
-
-# calculates the center position for the window on the monitor
-user32 = ctypes.windll.user32
-screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-x = screensize[0] / 2 - width / 2
-y = screensize[1] / 2 - height / 2
+# unicode symbols for the mathematical symbols used
+omega_sym = chr(937)
+tau_sym = chr(0x03C4)
+superscript_two_sym = chr(0x00B2)
 
 
-def switch_img_1():  # function for switching the image to image 1
-    image_canvas.create_image(2, 2, image=tk_img, anchor=tk.NW)
+def calculate_center_pos(w, h):  # finds the screen size of the operating system and calculates the center of the screen
+    user32 = ctypes.windll.user32
+    screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    x = screensize[0] / 2 - w / 2
+    y = screensize[1] / 2 - h / 2
+    return x, y
+
+
+def get_image():  # gets the last plot that was made and resize the plot to fit the GUI
+    img = Image.open("current_plot.png")
+    img = img.resize((img_width, img_height), Image.ANTIALIAS)
+    return ImageTk.PhotoImage(img)
+
+
+def switch_img(matrix, image_canvas):
+    # calls the function to plot a graph based on the matrix given and adds it to the given image canvas
+    center, m_width, m_height, inclination, labels = matrix.get_ellipse_params()
+    PlottingFunctions.plot_graph(center, m_width, m_height, inclination, labels)
+    img = get_image()
+    image_canvas.create_image(2, 2, image=img, anchor=tk.NW)
     image_canvas.pack()
 
 
-def switch_img_2():  # function for switching the image to image 2
-    image_canvas.create_image(2, 2, image=tk_img_2, anchor=tk.NW)
+def createGUI(m):
+    # gets the matrices that were passed to the GUI
+    matrices = m
+
+    # sets up the window and opens it in the center of the screen
+    gui = tk.Tk()
+    gui.title("SMC20374 - Programming for Prototyping")
+    x, y = calculate_center_pos(width, height)
+    gui.geometry(str(width) + "x" + str(height) + "+" + str(int(x)) + "+" + str(int(y)))
+    gui.resizable(0, 0)
+
+    # creates the buttons for choosing which plot to display
+    button_frame = tk.Frame(gui)
+    image_canvas = tk.Canvas(gui, width=img_width, height=img_height)
+    button_frame.pack(side='right')
+
+    # lambda expression to pass the matrix to the plotting function so the plot can be created and displayed
+    # the lambda expression was used so as we are able to pass parameters to the function that is called.
+    for i in range(len(matrices)):
+        label = matrices[i].get_labels()
+        b = tk.Button(button_frame, text=label[0] + " vs " + label[1], width=20, height=3,
+                      command=lambda i=i: switch_img(matrices[i], image_canvas))
+        b.pack(side='top', pady=10, padx=25)
+    # button_1 = tk.Button(button_frame, text=omega_sym + "bh" + superscript_two_sym + " vs " + omega_sym + "ch" +
+    #                      superscript_two_sym, width=15, height=3,
+    #                      command=lambda: switch_img(matrices[0], image_canvas))
+    #
+    # button_1.pack(side='top', pady=10)  # padding so the buttons are not touching each other directly
+    #
+    # button_2 = tk.Button(button_frame, text=omega_sym + "ch" + superscript_two_sym + " vs W", width=15, height=3,
+    #                      command=lambda: switch_img(matrices[1], image_canvas))
+    # button_2.pack(side='top', pady=10)
+    #
+    # button_3 = tk.Button(button_frame, text=tau_sym + " vs W", width=15, height=3,
+    #                      command=lambda: switch_img(matrices[2], image_canvas))
+    # button_3.pack(side='top', pady=10)
+    #
+    # button_4 = tk.Button(button_frame, text="log(A) vs ns", width=15, height=3,
+    #                      command=lambda: switch_img(matrices[3], image_canvas))
+    # button_4.pack(side='top', pady=10, padx=40)
+    # image_canvas.create_image(2, 2, image=tk_img, anchor=tk.NW)
     image_canvas.pack()
 
-
-def switch_img_3():  # function for switching the image to image 3
-    image_canvas.create_image(2, 2, image=tk_img_3, anchor=tk.NW)
-    image_canvas.pack()
-
-
-def switch_img_4():  # function for switching the image to image 4
-    image_canvas.create_image(2, 2, image=tk_img_4, anchor=tk.NW)
-    image_canvas.pack()
-
-
-# creates the window
-gui = tk.Tk()
-gui.title("SMC20374 - Programming for Prototyping")
-# sets the window to the size specified while also adding the offsets so the window opens in the center
-gui.geometry(str(width) + "x" + str(height) + "+" + str(int(x)) + "+" + str(int(y)))
-gui.resizable(width=False, height=False)
-
-# creates the button frame for the button panel to be placed in
-button_frame = tk.Frame(gui)
-image_canvas = tk.Canvas(gui, width=img_width, height=img_height)
-button_frame.pack(side='right')
-
-
-img = Image.open("omegabh2_vs_omegach2.png")
-img = img.resize((img_width, img_height), Image.ANTIALIAS)
-tk_img = ImageTk.PhotoImage(img)
-
-img_2 = Image.open("omegach2_vs_w.png")
-img_2 = img_2.resize((img_width, img_height), Image.ANTIALIAS)
-tk_img_2 = ImageTk.PhotoImage(img_2)
-
-img_3 = Image.open("tau_vs_w.png")
-img_3 = img_3.resize((img_width, img_height), Image.ANTIALIAS)
-tk_img_3 = ImageTk.PhotoImage(img_3)
-
-img_4 = Image.open("logA_vs_ns.png")
-img_4 = img_4.resize((img_width, img_height), Image.ANTIALIAS)
-tk_img_4 = ImageTk.PhotoImage(img_4)
-
-button_1 = tk.Button(button_frame, text=omega + "bh" + superscript_two + " vs " + omega + "ch" + superscript_two,
-                     width=30, height=10, command=switch_img_1)
-button_1.pack(side='top')
-button_2 = tk.Button(button_frame, text=omega + "ch" + superscript_two + " vs W", width=30, height=10, command=switch_img_2)
-button_2.pack(side='top')
-button_3 = tk.Button(button_frame, text=tau + " vs W", width=30, height=10, command=switch_img_3)
-button_3.pack(side='top')
-button_4 = tk.Button(button_frame, text="log(A) vs ns", width=30, height=10, command=switch_img_4)
-button_4.pack(side='top')
-image_canvas.create_image(2, 2, image=tk_img, anchor=tk.NW)
-image_canvas.pack()
-
-gui.mainloop()
+    gui.mainloop()
